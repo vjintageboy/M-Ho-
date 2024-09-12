@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mã Hóa Cipher</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="title">Mô Phỏng Mã Hóa Caesar Cipher</h1>
+        </header>
+
+        <section class="switch-section">
+            <button onclick="switchCipher()" 
+            style="height: 20px;">Chuyển đổi phương pháp mã hóa</button>
+        </section>
+
+        <section class="key-section">
+            <input type="number" id="key" placeholder="Nhập khóa (số từ 1 đến 25)" min="1" max="25">
+            <button onclick="generateRandomKey()">Sinh Khóa Ngẫu Nhiên</button>
+        </section>
+
+        <section class="text-section">
+            <div class="text-input">
+                <h2>Văn bản</h2>
+                <textarea id="text" placeholder="Nhập văn bản"></textarea>
+                <input type="file" id="fileInput" accept=".txt, .doc, .docx, .pdf" onchange="handleFile()">
+            </div>
+        </section>
+
+        <section class="action-section">
+            <button onclick="encrypt()">Mã Hóa</button>
+            <button onclick="decrypt()">Giải Mã</button>
+        </section>
+
+        <section class="result-section">
+            <h2>Kết quả</h2>
+            <div id="output"></div>
+        </section>
+    </div>
+
+    <div id="floatingHint" class="floating-hint">
+        <div class="hint-content">
+            <p>Bạn có muốn tải xuống file không?</p>
+            <button onclick="downloadEncryptedFile()">Tải xuống</button>
+            <button onclick="closeHint()">Đóng</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
