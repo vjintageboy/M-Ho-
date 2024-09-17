@@ -266,3 +266,115 @@ h2 {
 }
 
 /* ... rest of the existing styles ... */
+
+.switch-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.cipher-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    background-color: #4B5563;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cipher-button:hover {
+    background-color: #374151;
+    transform: translateY(-3px);
+}
+
+.cipher-button.active {
+    background-color: #3B82F6;
+}
+
+/* ... rest of the existing styles ... */
+
+/* Affine Key Section Styling */
+#affineKeySection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#affineKeySection .key-pair {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#affineKeySection .key-input {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 45%;
+    margin: 0 5px;
+}
+
+#affineKeySection label {
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #4B5563;
+}
+
+#affineKeySection input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #CBD5E0;
+    background-color: #F9FAFB;
+    color: #374151;
+    transition: border-color 0.3s ease;
+}
+
+#affineKeySection input:focus {
+    border-color: #3B82F6;
+    outline: none;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+#affineKeySection button {
+    width: 60%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #3B82F6;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#affineKeySection button:hover {
+    background-color: #2563EB;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+}
+
+/* Responsive design for Affine Key Section */
+@media (max-width: 768px) {
+    #affineKeySection .key-pair {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #affineKeySection .key-input {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    #affineKeySection button {
+        width: 100%;
+    }
+}
+
+/* ... rest of the existing styles ... */

@@ -9,17 +9,37 @@
 <body>
     <div class="container">
         <header>
-            <h1 id="title">Mô Phỏng Mã Hóa Caesar Cipher</h1>
+            <h1 id="title">Mô Phỏng Mã Hóa Cipher</h1>
         </header>
 
         <section class="switch-section">
-            <button onclick="switchCipher()" 
-            style="height: 20px;">Chuyển đổi phương pháp mã hóa</button>
+            <button onclick="switchCipher('caesar')" class="cipher-button" id="caesarButton">Caesar Cipher</button>
+            <button onclick="switchCipher('affine')" class="cipher-button" id="affineButton">Affine Cipher</button>
+            <button onclick="switchCipher('substitution')" class="cipher-button" id="substitutionButton">Substitution Cipher</button>
         </section>
 
-        <section class="key-section">
-            <input type="number" id="key" placeholder="Nhập khóa (số từ 1 đến 25)" min="1" max="25">
-            <button onclick="generateRandomKey()">Sinh Khóa Ngẫu Nhiên</button>
+        <section class="key-section" id="caesarKeySection">
+            <input type="number" id="caesarKey" placeholder="Nhập khóa Caesar (số từ 1 đến 25)" min="1" max="25">
+            <button onclick="generateRandomKey('caesar')">Sinh Khóa Ngẫu Nhiên</button>
+        </section>
+
+        <section class="key-section" id="affineKeySection" style="display: none;">
+            <div class="key-pair">
+                <div class="key-input">
+                    <label for="affineKeyA">Khóa a:</label>
+                    <input type="number" id="affineKeyA" placeholder="Số nguyên tố với 26" min="1" max="25">
+                </div>
+                <div class="key-input">
+                    <label for="affineKeyB">Khóa b:</label>
+                    <input type="number" id="affineKeyB" placeholder="Số từ 0 đến 25" min="0" max="25">
+                </div>
+            </div>
+            <button onclick="generateRandomKey('affine')">Sinh Khóa Ngẫu Nhiên</button>
+        </section>
+
+        <section class="key-section" id="substitutionKeySection" style="display: none;">
+            <input type="text" id="substitutionKey" placeholder="Nhập khóa thay thế (26 chữ cái)">
+            <button onclick="generateRandomKey('substitution')">Sinh Khóa Ngẫu Nhiên</button>
         </section>
 
         <section class="text-section">

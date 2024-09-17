@@ -1,4 +1,4 @@
-let isCaesarCipher = true;
+let currentCipher = 'caesar';
 
 // Hàm để lấy tham số từ URL
 function getUrlParameter(name) {
@@ -12,41 +12,49 @@ function getUrlParameter(name) {
 window.onload = function() {
     const cipherType = getUrlParameter('type');
     if (cipherType === 'substitution') {
-        isCaesarCipher = false;
-        switchCipher();
+        currentCipher = 'substitution';
+        switchCipher('substitution');
     }
     
     // Ẩn hộp gợi ý khi trang được tải
     document.getElementById('floatingHint').style.display = 'none';
 }
 
-function switchCipher() {
-    isCaesarCipher = !isCaesarCipher;
-    const title = document.getElementById('title');
-    const keyInput = document.getElementById('key');
-    const generateKeyButton = document.querySelector('.key-section button');
+// Cập nhật hàm switchCipher
+function switchCipher(cipherType) {
+    currentCipher = cipherType;
+    document.getElementById('caesarKeySection').style.display = 'none';
+    document.getElementById('affineKeySection').style.display = 'none';
+    document.getElementById('substitutionKeySection').style.display = 'none';
+    document.getElementById('caesarButton').classList.remove('active');
+    document.getElementById('affineButton').classList.remove('active');
+    document.getElementById('substitutionButton').classList.remove('active');
 
-    if (isCaesarCipher) {
-        title.innerText = "Mô Phỏng Mã Hóa Caesar Cipher";
-        keyInput.type = "number";
-        keyInput.placeholder = "Nhập khóa (số từ 1 đến 25)";
-        keyInput.min = "1";
-        keyInput.max = "25";
-        generateKeyButton.onclick = generateRandomKey;
-    } else {
-        title.innerText = "Mô Phỏng Mã Hóa Thay Thế";
-        keyInput.type = "text";
-        keyInput.placeholder = "Nhập khóa (chỉ chứa chữ cái)";
-        keyInput.removeAttribute("min");
-        keyInput.removeAttribute("max");
-        generateKeyButton.onclick = generateKey;
+    switch(cipherType) {
+        case 'caesar':
+            document.getElementById('title').innerText = "Mô Phỏng Mã Hóa Caesar Cipher";
+            document.getElementById('caesarKeySection').style.display = 'block';
+            document.getElementById('caesarButton').classList.add('active');
+            break;
+        case 'affine':
+            document.getElementById('title').innerText = "Mô Phỏng Mã Hóa Affine Cipher";
+            document.getElementById('affineKeySection').style.display = 'block';
+            document.getElementById('affineButton').classList.add('active');
+            break;
+        case 'substitution':
+            document.getElementById('title').innerText = "Mô Phỏng Mã Hóa Thay Thế";
+            document.getElementById('substitutionKeySection').style.display = 'block';
+            document.getElementById('substitutionButton').classList.add('active');
+            break;
     }
 }
 
 // Cập nhật hàm encrypt và decrypt
 function encrypt() {
-    if (isCaesarCipher) {
+    if (currentCipher === 'caesar') {
         encryptCaesar();
+    } else if (currentCipher === 'affine') {
+        encryptAffine();
     } else {
         encryptSubstitution();
     }
@@ -54,8 +62,10 @@ function encrypt() {
 }
 
 function decrypt() {
-    if (isCaesarCipher) {
+    if (currentCipher === 'caesar') {
         decryptCaesar();
+    } else if (currentCipher === 'affine') {
+        decryptAffine();
     } else {
         decryptSubstitution();
     }
@@ -64,7 +74,7 @@ function decrypt() {
 
 // Hàm mã hóa Caesar Cipher
 function encryptCaesar() {
-    const key = parseInt(document.getElementById('key').value);
+    const key = parseInt(document.getElementById('caesarKey').value);
     const text = document.getElementById('text').value.toUpperCase();
     let ciphertext = '';
 
@@ -90,7 +100,7 @@ function encryptCaesar() {
 
 // Hàm giải mã Caesar Cipher
 function decryptCaesar() {
-    const key = parseInt(document.getElementById('key').value);
+    const key = parseInt(document.getElementById('caesarKey').value);
     const ciphertext = document.getElementById('text').value.toUpperCase();
     let plaintext = '';
 
@@ -111,73 +121,146 @@ function decryptCaesar() {
     }
 
     document.getElementById('text').value = plaintext; // Hiển thị kết quả giải mã trong ô nhập
-    document.getElementById('output').innerText = "Kt quả giải mã: " + plaintext;
+    document.getElementById('output').innerText = "Kết quả giải mã: " + plaintext;
 }
 
 // Hàm sinh khóa ngẫu nhiên cho Caesar Cipher
-function generateRandomKey() {
-    const randomKey = Math.floor(Math.random() * 25) + 1;
-    document.getElementById('key').value = randomKey;
+function generateRandomKey(type) {
+    if (type === 'caesar') {
+        const randomKey = Math.floor(Math.random() * 25) + 1;
+        document.getElementById('caesarKey').value = randomKey;
+    } else if (type === 'affine') {
+        const validA = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
+        const randomA = validA[Math.floor(Math.random() * validA.length)];
+        const randomB = Math.floor(Math.random() * 26);
+        document.getElementById('affineKeyA').value = randomA;
+        document.getElementById('affineKeyB').value = randomB;
+    } else if (type === 'substitution') {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let key = alphabet.split('').sort(() => Math.random() - 0.5).join('');
+        document.getElementById('substitutionKey').value = key;
+    }
+}
+
+// Hàm mã hóa Affine
+function encryptAffine() {
+    const a = parseInt(document.getElementById('affineKeyA').value);
+    const b = parseInt(document.getElementById('affineKeyB').value);
+    const text = document.getElementById('text').value.toUpperCase();
+    let ciphertext = '';
+
+    if (!isValidAffineKey(a, b)) {
+        alert("Khóa Affine không hợp lệ. 'a' phải là số nguyên tố với 26.");
+        return;
+    }
+
+    for (let i = 0; i < text.length; i++) {
+        const charCode = text.charCodeAt(i);
+        if (charCode >= 65 && charCode <= 90) {
+            ciphertext += String.fromCharCode(((a * (charCode - 65) + b) % 26) + 65);
+        } else {
+            ciphertext += text[i];
+        }
+    }
+
+    document.getElementById('text').value = ciphertext;
+    document.getElementById('output').innerText = "Kết quả mã hóa: " + ciphertext;
+}
+
+// Hàm giải mã Affine
+function decryptAffine() {
+    const a = parseInt(document.getElementById('affineKeyA').value);
+    const b = parseInt(document.getElementById('affineKeyB').value);
+    const ciphertext = document.getElementById('text').value.toUpperCase();
+    let plaintext = '';
+
+    if (!isValidAffineKey(a, b)) {
+        alert("Khóa Affine không hợp lệ. 'a' phải là số nguyên tố với 26.");
+        return;
+    }
+
+    const aInverse = modInverse(a, 26);
+
+    for (let i = 0; i < ciphertext.length; i++) {
+        const charCode = ciphertext.charCodeAt(i);
+        if (charCode >= 65 && charCode <= 90) {
+            plaintext += String.fromCharCode((aInverse * (charCode - 65 - b + 26) % 26) + 65);
+        } else {
+            plaintext += ciphertext[i];
+        }
+    }
+
+    document.getElementById('text').value = plaintext;
+    document.getElementById('output').innerText = "Kết quả giải mã: " + plaintext;
+}
+
+// Hàm kiểm tra tính hợp lệ của khóa Affine
+function isValidAffineKey(a, b) {
+    return gcd(a, 26) === 1;
+}
+
+// Hàm tính ước chung lớn nhất
+function gcd(a, b) {
+    return b === 0 ? a : gcd(b, a % b);
+}
+
+// Hàm tính nghịch đảo modulo
+function modInverse(a, m) {
+    for (let x = 1; x < m; x++) {
+        if ((a * x) % m === 1) {
+            return x;
+        }
+    }
+    return 1;
 }
 
 // Hàm mã hóa Substitution Cipher
 function encryptSubstitution() {
-    const key = document.getElementById('key').value.toUpperCase();
+    const key = document.getElementById('substitutionKey').value.toUpperCase();
     const text = document.getElementById('text').value.toUpperCase();
     let ciphertext = '';
 
-    // Kiểm tra xem khóa có hợp lệ không
-    if (key.length === 0) {
-        alert("Vui lòng nhập khóa!");
+    if (key.length !== 26 || !/^[A-Z]+$/.test(key)) {
+        alert("Khóa thay thế không hợp lệ. Vui lòng nhập 26 chữ cái.");
         return;
     }
 
-    // Mã hóa
     for (let i = 0; i < text.length; i++) {
         const charCode = text.charCodeAt(i);
-        if (charCode >= 65 && charCode <= 90) { // Chỉ mã hóa chữ cái
-            ciphertext += key[(charCode - 65) % key.length];
+        if (charCode >= 65 && charCode <= 90) {
+            ciphertext += key[charCode - 65];
         } else {
-            ciphertext += text[i]; // Giữ nguyên ký tự không phải chữ cái
+            ciphertext += text[i];
         }
     }
 
-    document.getElementById('text').value = ciphertext; // Hiển thị kết quả mã hóa trong ô nhập
+    document.getElementById('text').value = ciphertext;
     document.getElementById('output').innerText = "Kết quả mã hóa: " + ciphertext;
 }
 
 // Hàm giải mã Substitution Cipher
 function decryptSubstitution() {
-    const key = document.getElementById('key').value.toUpperCase();
+    const key = document.getElementById('substitutionKey').value.toUpperCase();
     const ciphertext = document.getElementById('text').value.toUpperCase();
     let plaintext = '';
 
-    // Kiểm tra xem khóa có hợp lệ không
-    if (!key) {
-        alert("Vui lòng nhập khóa!");
+    if (key.length !== 26 || !/^[A-Z]+$/.test(key)) {
+        alert("Khóa thay thế không hợp lệ. Vui lòng nhập 26 chữ cái.");
         return;
     }
 
-    // Giải mã
-    for (const char of ciphertext) {
-        if (/[A-Z]/.test(char)) { // Chỉ giải mã chữ cái A-Z
+    for (let i = 0; i < ciphertext.length; i++) {
+        const char = ciphertext[i];
+        if (/[A-Z]/.test(char)) {
             const index = key.indexOf(char);
-            plaintext += index !== -1 ? String.fromCharCode(65 + index) : char;
+            plaintext += String.fromCharCode(65 + index);
         } else {
-            plaintext += char; // Giữ nguyên ký tự không phải chữ cái
+            plaintext += char;
         }
     }
 
-    // Hiển thị kết quả giải mã
     document.getElementById('text').value = plaintext;
-    document.getElementById('output').innerText = `Kết quả giải mã: ${plaintext}`;
-}
-
-// Hàm sinh khóa ngẫu nhiên cho Substitution Cipher
-function generateKey() {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let key = alphabet.split('').sort(() => Math.random() - 0.5).join(''); // Xáo trộn ngẫu nhiên
-    document.getElementById('key').value = key;
+    document.getElementById('output').innerText = "Kết quả giải mã: " + plaintext;
 }
 
 // Hàm xử lý file và trích xuất nội dung văn bản
@@ -259,4 +342,5 @@ function checkAndShowHint(isManualInput = false) {
 // Đảm bảo hộp gợi ý được ẩn khi trang được tải
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('floatingHint').style.display = 'none';
+    switchCipher('caesar');
 });
