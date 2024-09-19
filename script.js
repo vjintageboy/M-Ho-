@@ -26,9 +26,11 @@ function switchCipher(cipherType) {
     document.getElementById('caesarKeySection').style.display = 'none';
     document.getElementById('affineKeySection').style.display = 'none';
     document.getElementById('substitutionKeySection').style.display = 'none';
+    document.getElementById('vigenereKeySection').style.display = 'none';
     document.getElementById('caesarButton').classList.remove('active');
     document.getElementById('affineButton').classList.remove('active');
     document.getElementById('substitutionButton').classList.remove('active');
+    document.getElementById('vigenereButton').classList.remove('active');
 
     switch(cipherType) {
         case 'caesar':
@@ -46,28 +48,39 @@ function switchCipher(cipherType) {
             document.getElementById('substitutionKeySection').style.display = 'block';
             document.getElementById('substitutionButton').classList.add('active');
             break;
+        case 'vigenere':
+            document.getElementById('title').innerText = "Mô Phỏng Mã Hóa Vigenère Cipher";
+            document.getElementById('vigenereKeySection').style.display = 'block';
+            document.getElementById('vigenereButton').classList.add('active');
+            break;
     }
 }
 
 // Cập nhật hàm encrypt và decrypt
 function encrypt() {
+    console.log("Encrypt function called");
     if (currentCipher === 'caesar') {
         encryptCaesar();
     } else if (currentCipher === 'affine') {
         encryptAffine();
-    } else {
+    } else if (currentCipher === 'substitution') {
         encryptSubstitution();
+    } else if (currentCipher === 'vigenere') {
+        encryptVigenere();
     }
     checkAndShowHint(true);
 }
 
 function decrypt() {
+    console.log("Decrypt function called");
     if (currentCipher === 'caesar') {
         decryptCaesar();
     } else if (currentCipher === 'affine') {
         decryptAffine();
-    } else {
+    } else if (currentCipher === 'substitution') {
         decryptSubstitution();
+    } else if (currentCipher === 'vigenere') {
+        decryptVigenere();
     }
     checkAndShowHint(true);
 }
@@ -76,13 +89,18 @@ function decrypt() {
 function encryptCaesar() {
     const key = parseInt(document.getElementById('caesarKey').value);
     const text = document.getElementById('text').value.toUpperCase();
-    let ciphertext = '';
 
-    // Kiểm tra khóa hợp lệ
+    if (!text) {
+        alert("Vui lòng nhập văn bản cần mã hóa!");
+        return;
+    }
+
     if (isNaN(key) || key < 1 || key > 25) {
         alert("Vui lòng nhập khóa hợp lệ (số từ 1 đến 25)!");
         return;
     }
+
+    let ciphertext = '';
 
     // Mã hóa
     for (let i = 0; i < text.length; i++) {
@@ -104,7 +122,11 @@ function decryptCaesar() {
     const ciphertext = document.getElementById('text').value.toUpperCase();
     let plaintext = '';
 
-    // Kiểm tra khóa hợp lệ
+    if (!ciphertext) {
+        alert("Vui lòng nhập văn bản cần giải mã!");
+        return;
+    }
+
     if (isNaN(key) || key < 1 || key > 25) {
         alert("Vui lòng nhập khóa hợp lệ (số từ 1 đến 25)!");
         return;
@@ -139,6 +161,13 @@ function generateRandomKey(type) {
         const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let key = alphabet.split('').sort(() => Math.random() - 0.5).join('');
         document.getElementById('substitutionKey').value = key;
+    } else if (type === 'vigenere') {
+        const length = Math.floor(Math.random() * 10) + 5; // Random length between 5 and 14
+        let key = '';
+        for (let i = 0; i < length; i++) {
+            key += String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        }
+        document.getElementById('vigenereKey').value = key;
     }
 }
 
@@ -263,6 +292,68 @@ function decryptSubstitution() {
     document.getElementById('output').innerText = "Kết quả giải mã: " + plaintext;
 }
 
+// Hàm mã hóa Vigenère Cipher
+function encryptVigenere() {
+    const key = document.getElementById('vigenereKey').value.toUpperCase().replace(/[^A-Z]/g, '');
+    const text = document.getElementById('text').value.toUpperCase();
+    let ciphertext = '';
+    let keyIndex = '';
+
+    if (key.length === 0) {
+        alert("Vui lòng nhập khóa Vigenère hợp lệ (chỉ chữ cái).");
+        return;
+    }
+
+    let k = 0;
+    for (let i = 0; i < text.length; i++) {
+        const charCode = text.charCodeAt(i);
+        if (charCode >= 65 && charCode <= 90) {
+            const shift = key.charCodeAt(k % key.length) - 65;
+            ciphertext += String.fromCharCode(((charCode - 65 + shift) % 26) + 65);
+            keyIndex += shift + ' ';
+            k++;
+        } else {
+            ciphertext += text[i];
+            keyIndex += '  ';
+        }
+    }
+
+    document.getElementById('text').value = ciphertext;
+    document.getElementById('output').innerText = "Kết quả mã hóa: " + ciphertext;
+    document.getElementById('vigenereKeyIndex').innerText = "Chỉ số khóa (k): " + keyIndex.trim();
+}
+
+// Hàm giải mã Vigenère Cipher
+function decryptVigenere() {
+    const key = document.getElementById('vigenereKey').value.toUpperCase().replace(/[^A-Z]/g, '');
+    const ciphertext = document.getElementById('text').value.toUpperCase();
+    let plaintext = '';
+    let keyIndex = '';
+
+    if (key.length === 0) {
+        alert("Vui lòng nhập khóa Vigenère hợp lệ (chỉ chữ cái).");
+        return;
+    }
+
+    let k = 0;
+    for (let i = 0; i < ciphertext.length; i++) {
+        const charCode = ciphertext.charCodeAt(i);
+        if (charCode >= 65 && charCode <= 90) {
+            const shift = key.charCodeAt(k % key.length) - 65;
+            plaintext += String.fromCharCode(((charCode - 65 - shift + 26) % 26) + 65);
+            keyIndex += shift + ' ';
+            k++;
+        } else {
+            plaintext += ciphertext[i];
+            keyIndex += '  ';
+        }
+    }
+
+    document.getElementById('text').value = plaintext;
+    document.getElementById('output').innerText = "Kết quả giải mã: " + plaintext;
+    document.getElementById('vigenereKeyIndex').innerText = "Chỉ số khóa (k): " + keyIndex.trim();
+}
+
 // Hàm xử lý file và trích xuất nội dung văn bản
 function handleFile() {
     const fileInput = document.getElementById('fileInput');
@@ -343,4 +434,7 @@ function checkAndShowHint(isManualInput = false) {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('floatingHint').style.display = 'none';
     switchCipher('caesar');
+
+    document.querySelector('.action-section button:nth-child(1)').addEventListener('click', encrypt);
+    document.querySelector('.action-section button:nth-child(2)').addEventListener('click', decrypt);
 });

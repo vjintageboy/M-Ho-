@@ -16,6 +16,7 @@
             <button onclick="switchCipher('caesar')" class="cipher-button" id="caesarButton">Caesar Cipher</button>
             <button onclick="switchCipher('affine')" class="cipher-button" id="affineButton">Affine Cipher</button>
             <button onclick="switchCipher('substitution')" class="cipher-button" id="substitutionButton">Substitution Cipher</button>
+            <button onclick="switchCipher('vigenere')" class="cipher-button" id="vigenereButton">Vigenère Cipher</button>
         </section>
 
         <section class="key-section" id="caesarKeySection">
@@ -42,6 +43,12 @@
             <button onclick="generateRandomKey('substitution')">Sinh Khóa Ngẫu Nhiên</button>
         </section>
 
+        <section class="key-section" id="vigenereKeySection" style="display: none;">
+            <input type="text" id="vigenereKey" placeholder="Nhập khóa Vigenère (chỉ chữ cái)">
+            <button onclick="generateRandomKey('vigenere')">Sinh Khóa Ngẫu Nhiên</button>
+            <div id="vigenereKeyIndex"></div>
+        </section>
+
         <section class="text-section">
             <div class="text-input">
                 <h2>Văn bản</h2>
@@ -51,8 +58,8 @@
         </section>
 
         <section class="action-section">
-            <button onclick="encrypt()">Mã Hóa</button>
-            <button onclick="decrypt()">Giải Mã</button>
+            <button>Mã Hóa</button>
+            <button>Giải Mã</button>
         </section>
 
         <section class="result-section">
